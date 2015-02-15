@@ -2,6 +2,8 @@
 #  $target = $(event.target)
 #  if $target.closest("[jsaction*='toggle_snooze_menu']").length
 #    cl "clicked toggle snooze"
+isDebug = false
+
 $body = $(document.body)
 
 $body.arrive "[data-jsaction*='show_date_time_picker']", ->
@@ -49,27 +51,24 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
       $input.closest("[jsaction*='show_time_picker']").next().arrive "[role='menuitem']", ->
         if $(@).text().trim() is "Custom"
           $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-          debugger
-          $input.simulate("keydown", {keyCode: "2".charCodeAt(0)}).simulate("keyup", {keyCode: "2".charCodeAt(0)})
+          $input.val("4:00 PM")
+          $input.blur()
+          _.defer -> # TODO may be better to wait until both inputs are set
+            $("[jsaction*='date_time_pattern_set']").simulate("mousedown").simulate("mouseup").simulate("click")
       $input.simulate("mousedown").simulate("mouseup").simulate("click")
       $body.unbindArrive "[jsaction*='show_time_picker'] input[value]"
-
-#    $body.arrive "[jsaction*='date_time_pattern_set']", ->
-#      # TODO: wait until both inputs are set
-#      setTimeout =>
-#        $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-#        $body.unbindArrive "[jsaction*='date_time_pattern_set']"
-#      , 5000
 
     $("[data-jsaction*='show_date_time_picker']").simulate("mousedown").simulate("mouseup").simulate("click")
 
   $ul.append($newLi)
-  $newLi.simulate("click")
+  if isDebug
+    $newLi.simulate("click")
 
-$body.arrive ".top-level-item [jsaction*='list.toggle_snooze_menu']", ->
-  $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-  $body.unbindArrive ".top-level-item [jsaction*='list.toggle_snooze_menu']"
+if isDebug
+  $body.arrive ".top-level-item [jsaction*='list.toggle_snooze_menu']", ->
+    $(@).simulate("mousedown").simulate("mouseup").simulate("click")
+    $body.unbindArrive ".top-level-item [jsaction*='list.toggle_snooze_menu']"
 
-$body.arrive ".top-level-item [jsaction*='list.toggle_item']", ->
-  $(".top-level-item [jsaction*='list.toggle_item']").first().simulate("mouseover")
-  $body.unbindArrive ".top-level-item [jsaction*='list.toggle_item']"
+  $body.arrive ".top-level-item [jsaction*='list.toggle_item']", ->
+    $(".top-level-item [jsaction*='list.toggle_item']").first().simulate("mouseover")
+    $body.unbindArrive ".top-level-item [jsaction*='list.toggle_item']"
