@@ -158,13 +158,13 @@
   });
 
   if (isDebug) {
-    $body.arrive(".top-level-item [jsaction*='list.toggle_snooze_menu']", function() {
+    $body.arrive(".top-level-item [jsaction*='toggle_snooze_menu']", function() {
       $(this).simulate("mousedown").simulate("mouseup").simulate("click");
-      return $body.unbindArrive(".top-level-item [jsaction*='list.toggle_snooze_menu']");
+      return $body.unbindArrive(".top-level-item [jsaction*='toggle_snooze_menu']");
     });
-    $body.arrive(".top-level-item [jsaction*='list.toggle_item']", function() {
-      $(".top-level-item [jsaction*='list.toggle_item']").first().simulate("mouseover");
-      return $body.unbindArrive(".top-level-item [jsaction*='list.toggle_item']");
+    $body.arrive(".top-level-item [jsaction*='toggle_item']", function() {
+      $(".top-level-item [jsaction*='toggle_item']").first().simulate("mouseover");
+      return $body.unbindArrive(".top-level-item [jsaction*='toggle_item']");
     });
   }
 
@@ -172,6 +172,9 @@
     var $currentItem, $element, $target;
     $target = $(event.target);
     if ($target.closest(":input").length || $target.closest("[contenteditable]").length) {
+      return;
+    }
+    if (event.shiftKey || event.altKey || event.ctrlKey) {
       return;
     }
     if (event.keyCode >= 49 && event.keyCode <= 57) {
@@ -186,7 +189,7 @@
         if (!$currentItem.length) {
           return;
         }
-        $currentItem.find("[jsaction*='list.toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click");
+        $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click");
         return _.defer(function() {
           $element = $(".snooze-element:visible");
           if ($element.length) {

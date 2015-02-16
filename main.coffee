@@ -122,17 +122,19 @@ $body.arrive "[jsaction*='show_time_picker'] + div [role='menuitem']:first-child
 #  $menu.append($newMenuitem)
 
 if isDebug
-  $body.arrive ".top-level-item [jsaction*='list.toggle_snooze_menu']", ->
+  $body.arrive ".top-level-item [jsaction*='toggle_snooze_menu']", ->
     $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-    $body.unbindArrive ".top-level-item [jsaction*='list.toggle_snooze_menu']"
+    $body.unbindArrive ".top-level-item [jsaction*='toggle_snooze_menu']"
 
-  $body.arrive ".top-level-item [jsaction*='list.toggle_item']", ->
-    $(".top-level-item [jsaction*='list.toggle_item']").first().simulate("mouseover")
-    $body.unbindArrive ".top-level-item [jsaction*='list.toggle_item']"
+  $body.arrive ".top-level-item [jsaction*='toggle_item']", ->
+    $(".top-level-item [jsaction*='toggle_item']").first().simulate("mouseover")
+    $body.unbindArrive ".top-level-item [jsaction*='toggle_item']"
 
 $body.on "keydown", (event) ->
   $target = $(event.target)
   if $target.closest(":input").length or $target.closest("[contenteditable]").length
+    return
+  if event.shiftKey or event.altKey or event.ctrlKey
     return
   if event.keyCode >= 49 and event.keyCode <= 57
     $element = $(".snooze-element:visible")
@@ -144,7 +146,7 @@ $body.on "keydown", (event) ->
         $currentItem = $(".scroll-list-item-highlighted")
       if not $currentItem.length
         return
-      $currentItem.find("[jsaction*='list.toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
+      $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
       _.defer ->
         $element = $(".snooze-element:visible")
         if $element.length
