@@ -170,6 +170,9 @@
 
   $body.on("keydown", function(event) {
     var $currentItem, $element;
+    if ($(event.target).closest(":input").length) {
+      return;
+    }
     if (event.keyCode >= 49 && event.keyCode <= 57) {
       $element = $(".snooze-element:visible");
       if ($element.length) {
