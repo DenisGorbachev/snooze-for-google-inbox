@@ -66,16 +66,18 @@
       $body.arrive("[jsaction*='show_time_picker'] input[value]", {
         fireOnAttributesModification: true
       }, function() {
-        var $input;
+        var $divAfterShowTimePicker, $input;
         $input = $(this);
-        $input.closest("[jsaction*='show_time_picker']").next().arrive("[role='menuitem']", function() {
+        $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next();
+        $divAfterShowTimePicker.arrive("[role='menuitem']", function() {
           if ($(this).text().trim() === "Custom") {
             $(this).simulate("mousedown").simulate("mouseup").simulate("click");
             $input.val("4:00 PM");
             $input.blur();
-            return _.defer(function() {
+            _.defer(function() {
               return $("[jsaction*='date_time_pattern_set']").simulate("mousedown").simulate("mouseup").simulate("click");
             });
+            return $divAfterShowTimePicker.unbindArrive("[role='menuitem']");
           }
         });
         $input.simulate("mousedown").simulate("mouseup").simulate("click");

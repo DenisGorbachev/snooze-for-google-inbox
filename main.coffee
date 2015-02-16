@@ -48,13 +48,15 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
 
     $body.arrive "[jsaction*='show_time_picker'] input[value]", {fireOnAttributesModification: true}, ->
       $input = $(@)
-      $input.closest("[jsaction*='show_time_picker']").next().arrive "[role='menuitem']", ->
+      $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next()
+      $divAfterShowTimePicker.arrive "[role='menuitem']", ->
         if $(@).text().trim() is "Custom"
           $(@).simulate("mousedown").simulate("mouseup").simulate("click")
           $input.val("4:00 PM")
           $input.blur()
           _.defer -> # TODO may be better to wait until both inputs are set
             $("[jsaction*='date_time_pattern_set']").simulate("mousedown").simulate("mouseup").simulate("click")
+          $divAfterShowTimePicker.unbindArrive "[role='menuitem']"
       $input.simulate("mousedown").simulate("mouseup").simulate("click")
       $body.unbindArrive "[jsaction*='show_time_picker'] input[value]"
 
