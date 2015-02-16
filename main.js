@@ -95,6 +95,9 @@
     for (_i = 0, _len = times.length; _i < _len; _i++) {
       time = times[_i];
       $newLi = $(firstExistingLiHtml);
+      $newLi.find().andSelf().each(function(index, el) {
+        return $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data");
+      });
       $spans = $newLi.find("span");
       $spans.eq(1).text(time.name);
       $spans.eq(2).text(time.hint);
@@ -168,9 +171,9 @@
   $body.on("keydown", function(event) {
     var $element;
     if (event.keyCode >= 49 && event.keyCode <= 57) {
-      $element = $(".snooze-element:visible");
+      $element = $(".snooze-element:visible").eq(event.keyCode - 49);
       if ($element.length) {
-        return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
+        return $element.simulate("mousedown").simulate("mouseup").simulate("click");
       }
     }
   });

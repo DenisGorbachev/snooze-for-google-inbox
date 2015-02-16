@@ -1,7 +1,7 @@
-#$body.on "click", (event) ->
-#  $target = $(event.target)
-#  if $target.closest("[jsaction*='toggle_snooze_menu']").length
-#    cl "clicked toggle snooze"
+# TODO: rewrite using "jsactions"?
+# I've discovered that jsaction attribute is actually being used at runtime
+# if you copy HTML while leaving jsaction, it will behave like the copy source element
+
 isDebug = false
 
 $body = $(document.body)
@@ -73,8 +73,8 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
   firstExistingLiHtml = $firstExistingLi[0].outerHTML
   for time in times
     $newLi = $(firstExistingLiHtml)
-#    $newLi.find().andSelf().each (index, el) ->
-#      $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
+    $newLi.find().andSelf().each (index, el) ->
+      $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
     $spans = $newLi.find("span")
     $spans.eq(1).text(time.name)
     $spans.eq(2).text(time.hint)
@@ -132,6 +132,6 @@ if isDebug
 
 $body.on "keydown", (event) ->
   if event.keyCode >= 49 and event.keyCode <= 57
-    $element = $(".snooze-element:visible")
+    $element = $(".snooze-element:visible").eq(event.keyCode - 49)
     if $element.length
-      $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
+      $element.simulate("mousedown").simulate("mouseup").simulate("click")
