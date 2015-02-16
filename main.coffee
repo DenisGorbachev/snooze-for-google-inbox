@@ -53,13 +53,13 @@ handleNewLiClick = (dateIncrement, time, event) ->
 
 times = [
   {
-    name: "Tennis 0"
+    name: "[T0] Tennis today"
     hint: "4:00 PM"
     dateIncrement: 0
     time: "4:00 PM"
   }
   {
-    name: "Tennis +1"
+    name: "[T1] Tennis tomorrow"
     hint: "4:00 PM"
     dateIncrement: 1
     time: "4:00 PM"
@@ -68,19 +68,25 @@ times = [
 
 $body.arrive "[data-jsaction*='show_date_time_picker']", ->
   $element = $(@)
-  $ul = $element.closest("section").prev("section").find("ul")
+  $ul = $element.closest("section").prev("section").find("ul").first()
   $firstExistingLi = $ul.find("li").first()
   firstExistingLiHtml = $firstExistingLi[0].outerHTML
   for time in times
     $newLi = $(firstExistingLiHtml)
-    $newLi.find().andSelf().each (index, el) ->
-      $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
+#    $newLi.find().andSelf().each (index, el) ->
+#      $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
     $spans = $newLi.find("span")
     $spans.eq(1).text(time.name)
     $spans.eq(2).text(time.hint)
     $newLi.addClass("snooze-element snooze-list-item")
     $newLi.on "click", _.partial(handleNewLiClick, time.dateIncrement, time.time)
     $ul.append($newLi)
+  jsinstance = 0
+  $ul.find("li").each ->
+    $(@).attr("jsinstance", jsinstance)
+    jsinstance++
+  $lastLi = $ul.find("li").last()
+  $lastLi.attr("jsinstance", "*" + $lastLi.attr("jsinstance"))
   if isDebug
     $newLi.simulate("click")
 
@@ -93,7 +99,7 @@ $body.arrive "[jsaction*='show_time_picker'] + div [role='menuitem']:first-child
   $newMenuitem.find().andSelf().each (index, el) ->
     $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
   $newSpans = $newMenuitem.find("span")
-  $newSpans.eq(0).text("Pre-tennis")
+  $newSpans.eq(0).text("[T] Tennis")
   $newSpans.eq(1).text("4:00 PM")
   $beforeMenuitem = null
   $arrivedMenuitem.nextAll("[role='menuitem']").andSelf().each ->
@@ -123,3 +129,9 @@ if isDebug
   $body.arrive ".top-level-item [jsaction*='list.toggle_item']", ->
     $(".top-level-item [jsaction*='list.toggle_item']").first().simulate("mouseover")
     $body.unbindArrive ".top-level-item [jsaction*='list.toggle_item']"
+
+$body.on "keydown", (event) ->
+  if event.keyCode >= 49 and event.keyCode <= 57
+    $element = $(".snooze-element:visible")
+    if $element.length
+      $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")

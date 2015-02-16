@@ -74,12 +74,12 @@
 
   times = [
     {
-      name: "Tennis 0",
+      name: "[T0] Tennis today",
       hint: "4:00 PM",
       dateIncrement: 0,
       time: "4:00 PM"
     }, {
-      name: "Tennis +1",
+      name: "[T1] Tennis tomorrow",
       hint: "4:00 PM",
       dateIncrement: 1,
       time: "4:00 PM"
@@ -87,17 +87,14 @@
   ];
 
   $body.arrive("[data-jsaction*='show_date_time_picker']", function() {
-    var $element, $firstExistingLi, $newLi, $spans, $ul, firstExistingLiHtml, time, _i, _len;
+    var $element, $firstExistingLi, $lastLi, $newLi, $spans, $ul, firstExistingLiHtml, jsinstance, time, _i, _len;
     $element = $(this);
-    $ul = $element.closest("section").prev("section").find("ul");
+    $ul = $element.closest("section").prev("section").find("ul").first();
     $firstExistingLi = $ul.find("li").first();
     firstExistingLiHtml = $firstExistingLi[0].outerHTML;
     for (_i = 0, _len = times.length; _i < _len; _i++) {
       time = times[_i];
       $newLi = $(firstExistingLiHtml);
-      $newLi.find().andSelf().each(function(index, el) {
-        return $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data");
-      });
       $spans = $newLi.find("span");
       $spans.eq(1).text(time.name);
       $spans.eq(2).text(time.hint);
@@ -105,6 +102,13 @@
       $newLi.on("click", _.partial(handleNewLiClick, time.dateIncrement, time.time));
       $ul.append($newLi);
     }
+    jsinstance = 0;
+    $ul.find("li").each(function() {
+      $(this).attr("jsinstance", jsinstance);
+      return jsinstance++;
+    });
+    $lastLi = $ul.find("li").last();
+    $lastLi.attr("jsinstance", "*" + $lastLi.attr("jsinstance"));
     if (isDebug) {
       return $newLi.simulate("click");
     }
@@ -122,7 +126,7 @@
       return $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data");
     });
     $newSpans = $newMenuitem.find("span");
-    $newSpans.eq(0).text("Pre-tennis");
+    $newSpans.eq(0).text("[T] Tennis");
     $newSpans.eq(1).text("4:00 PM");
     $beforeMenuitem = null;
     $arrivedMenuitem.nextAll("[role='menuitem']").andSelf().each(function() {
@@ -160,5 +164,15 @@
       return $body.unbindArrive(".top-level-item [jsaction*='list.toggle_item']");
     });
   }
+
+  $body.on("keydown", function(event) {
+    var $element;
+    if (event.keyCode >= 49 && event.keyCode <= 57) {
+      $element = $(".snooze-element:visible");
+      if ($element.length) {
+        return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
+      }
+    }
+  });
 
 }).call(this);
