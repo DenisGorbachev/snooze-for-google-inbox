@@ -131,7 +131,8 @@ if isDebug
     $body.unbindArrive ".top-level-item [jsaction*='list.toggle_item']"
 
 $body.on "keydown", (event) ->
-  if $(event.target).closest(":input").length
+  $target = $(event.target)
+  if $target.closest(":input").length or $target.closest("[contenteditable]").length
     return
   if event.keyCode >= 49 and event.keyCode <= 57
     $element = $(".snooze-element:visible")

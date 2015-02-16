@@ -169,8 +169,9 @@
   }
 
   $body.on("keydown", function(event) {
-    var $currentItem, $element;
-    if ($(event.target).closest(":input").length) {
+    var $currentItem, $element, $target;
+    $target = $(event.target);
+    if ($target.closest(":input").length || $target.closest("[contenteditable]").length) {
       return;
     }
     if (event.keyCode >= 49 && event.keyCode <= 57) {
