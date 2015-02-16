@@ -169,11 +169,26 @@
   }
 
   $body.on("keydown", function(event) {
-    var $element;
+    var $currentItem, $element;
     if (event.keyCode >= 49 && event.keyCode <= 57) {
-      $element = $(".snooze-element:visible").eq(event.keyCode - 49);
+      $element = $(".snooze-element:visible");
       if ($element.length) {
-        return $element.simulate("mousedown").simulate("mouseup").simulate("click");
+        return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
+      } else {
+        $currentItem = $(".scroll-list-item-open");
+        if (!$currentItem.length) {
+          $currentItem = $(".scroll-list-item-highlighted");
+        }
+        if (!$currentItem.length) {
+          return;
+        }
+        $currentItem.find("[jsaction*='list.toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click");
+        return _.defer(function() {
+          $element = $(".snooze-element:visible");
+          if ($element.length) {
+            return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
+          }
+        });
       }
     }
   });

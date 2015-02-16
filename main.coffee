@@ -132,6 +132,18 @@ if isDebug
 
 $body.on "keydown", (event) ->
   if event.keyCode >= 49 and event.keyCode <= 57
-    $element = $(".snooze-element:visible").eq(event.keyCode - 49)
+    $element = $(".snooze-element:visible")
     if $element.length
-      $element.simulate("mousedown").simulate("mouseup").simulate("click")
+      $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
+    else
+      $currentItem = $(".scroll-list-item-open")
+      if not $currentItem.length
+        $currentItem = $(".scroll-list-item-highlighted")
+      if not $currentItem.length
+        return
+      $currentItem.find("[jsaction*='list.toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
+      _.defer ->
+        $element = $(".snooze-element:visible")
+        if $element.length
+          $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
+
