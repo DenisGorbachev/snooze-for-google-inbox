@@ -136,19 +136,25 @@ $body.on "keydown", (event) ->
     return
   if event.shiftKey or event.altKey or event.ctrlKey
     return
+  if event.keyCode is 192
+    window.openSnoozeMenu()
+    return
   if event.keyCode >= 49 and event.keyCode <= 57
     $element = $(".snooze-element:visible")
     if $element.length
       $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
     else
-      $currentItem = $(".scroll-list-item-open")
-      if not $currentItem.length
-        $currentItem = $(".scroll-list-item-highlighted")
-      if not $currentItem.length
-        return
-      $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
-      _.defer ->
-        $element = $(".snooze-element:visible")
-        if $element.length
-          $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
+      window.openSnoozeMenu ->
+        _.defer ->
+          $element = $(".snooze-element:visible")
+          if $element.length
+            $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click")
 
+window.openSnoozeMenu = (callback = null) ->
+  $currentItem = $(".scroll-list-item-open")
+  if not $currentItem.length
+    $currentItem = $(".scroll-list-item-highlighted")
+  if not $currentItem.length
+    return
+  $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
+  callback?()

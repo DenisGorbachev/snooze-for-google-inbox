@@ -169,7 +169,7 @@
   }
 
   $body.on("keydown", function(event) {
-    var $currentItem, $element, $target;
+    var $element, $target;
     $target = $(event.target);
     if ($target.closest(":input").length || $target.closest("[contenteditable]").length) {
       return;
@@ -177,27 +177,41 @@
     if (event.shiftKey || event.altKey || event.ctrlKey) {
       return;
     }
+    if (event.keyCode === 192) {
+      window.openSnoozeMenu();
+      return;
+    }
     if (event.keyCode >= 49 && event.keyCode <= 57) {
       $element = $(".snooze-element:visible");
       if ($element.length) {
         return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
       } else {
-        $currentItem = $(".scroll-list-item-open");
-        if (!$currentItem.length) {
-          $currentItem = $(".scroll-list-item-highlighted");
-        }
-        if (!$currentItem.length) {
-          return;
-        }
-        $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click");
-        return _.defer(function() {
-          $element = $(".snooze-element:visible");
-          if ($element.length) {
-            return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
-          }
+        return window.openSnoozeMenu(function() {
+          return _.defer(function() {
+            $element = $(".snooze-element:visible");
+            if ($element.length) {
+              return $element.eq(event.keyCode - 49).simulate("mousedown").simulate("mouseup").simulate("click");
+            }
+          });
         });
       }
     }
   });
+
+  window.openSnoozeMenu = function(callback) {
+    var $currentItem;
+    if (callback == null) {
+      callback = null;
+    }
+    $currentItem = $(".scroll-list-item-open");
+    if (!$currentItem.length) {
+      $currentItem = $(".scroll-list-item-highlighted");
+    }
+    if (!$currentItem.length) {
+      return;
+    }
+    $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click");
+    return typeof callback === "function" ? callback() : void 0;
+  };
 
 }).call(this);
