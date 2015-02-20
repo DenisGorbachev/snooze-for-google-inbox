@@ -64,6 +64,12 @@ times = [
     dateIncrement: 1
     time: "4:00 PM"
   }
+  {
+    name: "[E0] Evening today"
+    hint: "10:00 PM"
+    dateIncrement: 0
+    time: "10:00 PM"
+  }
 ]
 
 $body.arrive "[data-jsaction*='show_date_time_picker']", ->
