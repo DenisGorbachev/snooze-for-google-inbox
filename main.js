@@ -6,9 +6,16 @@
 
   $body = $(document.body);
 
-  handleNewLiClick = function(dateIncrement, time, event) {
+  handleNewLiClick = function(time, event) {
+    var CurrentMoment, TimeMoment;
+    TimeMoment = time.getMoment();
+    CurrentMoment = moment().hour(0).minute(0).second(0);
     $body.arrive("[jsaction*='show_date_picker'] + div", function() {
-      var $currentTd, $targetTd, $tds, cls, tdsByClassNames;
+      var $currentTd, $targetTd, $tds, cls, dateIncrement, tdsByClassNames;
+      dateIncrement = TimeMoment.diff(CurrentMoment, 'days');
+      if (dateIncrement < 0) {
+        throw "dateIncrement " + dateIncrement + " < 0";
+      }
       tdsByClassNames = {};
       $("[jsaction*='show_date_picker'] + div tbody td").each(function() {
         var $td, cls, clses, _i, _len, _results;
@@ -37,7 +44,7 @@
       }
       $targetTd = $currentTd;
       while (dateIncrement) {
-        $targetTd = $currentTd.next();
+        $targetTd = $targetTd.next();
         if (!$targetTd.length) {
           $targetTd = $currentTd.closest("tr").next().find("td").first();
         }
@@ -56,7 +63,7 @@
       $divAfterShowTimePicker.arrive("[role='menuitem']", function() {
         if ($(this).text().trim() === "Custom") {
           $(this).simulate("mousedown").simulate("mouseup").simulate("click");
-          $input.val(time);
+          $input.val(TimeMoment.format("hh:mm A"));
           $input.blur();
           _.defer(function() {
             return $button.simulate("mousedown").simulate("mouseup").simulate("click");
@@ -75,19 +82,39 @@
   times = [
     {
       name: "[T0] Tennis today",
-      hint: "4:00 PM",
-      dateIncrement: 0,
-      time: "4:00 PM"
-    }, {
-      name: "[T1] Tennis tomorrow",
-      hint: "4:00 PM",
-      dateIncrement: 1,
-      time: "4:00 PM"
+      getMoment: function() {
+        return moment().hour(16).minute(0).second(0);
+      }
     }, {
       name: "[E0] Evening today",
-      hint: "10:00 PM",
-      dateIncrement: 0,
-      time: "10:00 PM"
+      getMoment: function() {
+        return moment().hour(22).minute(0).second(0);
+      }
+    }, {
+      name: "[T1] Tennis tomorrow",
+      getMoment: function() {
+        return moment().hour(16).minute(0).second(0).add(1, "days");
+      }
+    }, {
+      name: "[MW] Morning this Sunday",
+      getMoment: function() {
+        var Moment;
+        Moment = moment().hour(7).minute(0).second(0).day("Sunday");
+        if (Moment.toDate().getTime() < Date.now()) {
+          Moment.add(7, "days");
+        }
+        return Moment;
+      }
+    }, {
+      name: "[TT] Tennis this Tuesday",
+      getMoment: function() {
+        var Moment;
+        Moment = moment().hour(16).minute(0).second(0).day("Tuesday");
+        if (Moment.toDate().getTime() < Date.now()) {
+          Moment.add(7, "days");
+        }
+        return Moment;
+      }
     }
   ];
 
@@ -105,9 +132,9 @@
       });
       $spans = $newLi.find("span");
       $spans.eq(1).text(time.name);
-      $spans.eq(2).text(time.hint);
+      $spans.eq(2).text(time.getMoment().format("hh:mm A"));
       $newLi.addClass("snooze-element snooze-list-item");
-      $newLi.on("click", _.partial(handleNewLiClick, time.dateIncrement, time.time));
+      $newLi.on("click", _.partial(handleNewLiClick, time));
       $ul.append($newLi);
     }
     jsinstance = 0;

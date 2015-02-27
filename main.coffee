@@ -6,9 +6,14 @@ isDebug = false
 
 $body = $(document.body)
 
-handleNewLiClick = (dateIncrement, time, event) ->
+handleNewLiClick = (time, event) ->
+  TimeMoment = time.getMoment()
+  CurrentMoment = moment().hour(0).minute(0).second(0)
 
   $body.arrive "[jsaction*='show_date_picker'] + div", ->
+    dateIncrement = TimeMoment.diff(CurrentMoment, 'days')
+    if dateIncrement < 0
+      throw "dateIncrement #{dateIncrement} < 0"
     tdsByClassNames = {}
     $("[jsaction*='show_date_picker'] + div tbody td").each ->
       $td = $(@)
@@ -26,7 +31,7 @@ handleNewLiClick = (dateIncrement, time, event) ->
       throw "Couldn't find current td"
     $targetTd = $currentTd
     while dateIncrement
-      $targetTd = $currentTd.next()
+      $targetTd = $targetTd.next()
       if not $targetTd.length
         $targetTd = $currentTd.closest("tr").next().find("td").first()
       dateIncrement--
@@ -40,7 +45,7 @@ handleNewLiClick = (dateIncrement, time, event) ->
     $divAfterShowTimePicker.arrive "[role='menuitem']", ->
       if $(@).text().trim() is "Custom"
         $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-        $input.val(time)
+        $input.val(TimeMoment.format("hh:mm A"))
         $input.blur()
         _.defer -> # TODO may be better to wait until both inputs are set
           $button.simulate("mousedown").simulate("mouseup").simulate("click")
@@ -54,21 +59,34 @@ handleNewLiClick = (dateIncrement, time, event) ->
 times = [
   {
     name: "[T0] Tennis today"
-    hint: "4:00 PM"
-    dateIncrement: 0
-    time: "4:00 PM"
-  }
-  {
-    name: "[T1] Tennis tomorrow"
-    hint: "4:00 PM"
-    dateIncrement: 1
-    time: "4:00 PM"
+    getMoment: ->
+      moment().hour(16).minute(0).second(0)
   }
   {
     name: "[E0] Evening today"
-    hint: "10:00 PM"
-    dateIncrement: 0
-    time: "10:00 PM"
+    getMoment: ->
+      moment().hour(22).minute(0).second(0)
+  }
+  {
+    name: "[T1] Tennis tomorrow"
+    getMoment: ->
+      moment().hour(16).minute(0).second(0).add(1, "days")
+  }
+  {
+    name: "[MW] Morning this Sunday"
+    getMoment: ->
+      Moment = moment().hour(7).minute(0).second(0).day("Sunday")
+      if Moment.toDate().getTime() < Date.now()
+        Moment.add(7, "days")
+      Moment
+  }
+  {
+    name: "[TT] Tennis this Tuesday"
+    getMoment: ->
+      Moment = moment().hour(16).minute(0).second(0).day("Tuesday")
+      if Moment.toDate().getTime() < Date.now()
+        Moment.add(7, "days")
+      Moment
   }
 ]
 
@@ -83,9 +101,9 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
       $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
     $spans = $newLi.find("span")
     $spans.eq(1).text(time.name)
-    $spans.eq(2).text(time.hint)
+    $spans.eq(2).text(time.getMoment().format("hh:mm A"))
     $newLi.addClass("snooze-element snooze-list-item")
-    $newLi.on "click", _.partial(handleNewLiClick, time.dateIncrement, time.time)
+    $newLi.on "click", _.partial(handleNewLiClick, time)
     $ul.append($newLi)
   jsinstance = 0
   $ul.find("li").each ->
