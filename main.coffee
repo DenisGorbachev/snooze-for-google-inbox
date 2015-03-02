@@ -14,16 +14,16 @@ handleNewLiClick = (time, event) ->
     dateIncrement = TimeMoment.diff(CurrentMoment, 'days')
     if dateIncrement < 0
       throw "dateIncrement #{dateIncrement} < 0"
-    tdsByClassNames = {}
+    cl dateIncrement
+    tdsByBackgroundColor = {}
     $("[jsaction*='show_date_picker'] + div tbody td").each ->
       $td = $(@)
-      clses = $td.attr("class").toString().split(' ')
-      for cls in clses
-        if not tdsByClassNames[cls]
-          tdsByClassNames[cls] = []
-        tdsByClassNames[cls].push($td)
+      backgroundColor = $td.css("background-color").toString()
+      if not tdsByBackgroundColor[backgroundColor]
+        tdsByBackgroundColor[backgroundColor] = []
+      tdsByBackgroundColor[backgroundColor].push($td)
     $currentTd = null
-    for cls, $tds of tdsByClassNames
+    for cls, $tds of tdsByBackgroundColor
       if $tds.length is 1
         $currentTd = $tds[0]
         break
@@ -92,8 +92,13 @@ times = [
 
 $body.arrive "[data-jsaction*='show_date_time_picker']", ->
   $element = $(@)
-  $ul = $element.closest("section").prev("section").find("ul").first()
+  $section = $element.closest("section")
+  $sectionContainer = $section.closest("div")
+  $sectionContainer.css("max-height", "1000px")
+  $sectionContainer.prev("header").remove()
+  $ul = $section.prev("section").find("ul").first()
   $firstExistingLi = $ul.find("li").first()
+  $sectionContainer.prepend($section)
   firstExistingLiHtml = $firstExistingLi[0].outerHTML
   for time in times
     $newLi = $(firstExistingLiHtml)

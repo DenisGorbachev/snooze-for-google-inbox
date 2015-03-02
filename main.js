@@ -11,29 +11,25 @@
     TimeMoment = time.getMoment();
     CurrentMoment = moment().hour(0).minute(0).second(0);
     $body.arrive("[jsaction*='show_date_picker'] + div", function() {
-      var $currentTd, $targetTd, $tds, cls, dateIncrement, tdsByClassNames;
+      var $currentTd, $targetTd, $tds, cls, dateIncrement, tdsByBackgroundColor;
       dateIncrement = TimeMoment.diff(CurrentMoment, 'days');
       if (dateIncrement < 0) {
         throw "dateIncrement " + dateIncrement + " < 0";
       }
-      tdsByClassNames = {};
+      cl(dateIncrement);
+      tdsByBackgroundColor = {};
       $("[jsaction*='show_date_picker'] + div tbody td").each(function() {
-        var $td, cls, clses, _i, _len, _results;
+        var $td, backgroundColor;
         $td = $(this);
-        clses = $td.attr("class").toString().split(' ');
-        _results = [];
-        for (_i = 0, _len = clses.length; _i < _len; _i++) {
-          cls = clses[_i];
-          if (!tdsByClassNames[cls]) {
-            tdsByClassNames[cls] = [];
-          }
-          _results.push(tdsByClassNames[cls].push($td));
+        backgroundColor = $td.css("background-color").toString();
+        if (!tdsByBackgroundColor[backgroundColor]) {
+          tdsByBackgroundColor[backgroundColor] = [];
         }
-        return _results;
+        return tdsByBackgroundColor[backgroundColor].push($td);
       });
       $currentTd = null;
-      for (cls in tdsByClassNames) {
-        $tds = tdsByClassNames[cls];
+      for (cls in tdsByBackgroundColor) {
+        $tds = tdsByBackgroundColor[cls];
         if ($tds.length === 1) {
           $currentTd = $tds[0];
           break;
@@ -119,10 +115,15 @@
   ];
 
   $body.arrive("[data-jsaction*='show_date_time_picker']", function() {
-    var $element, $firstExistingLi, $lastLi, $newLi, $spans, $ul, firstExistingLiHtml, jsinstance, time, _i, _len;
+    var $element, $firstExistingLi, $lastLi, $newLi, $section, $sectionContainer, $spans, $ul, firstExistingLiHtml, jsinstance, time, _i, _len;
     $element = $(this);
-    $ul = $element.closest("section").prev("section").find("ul").first();
+    $section = $element.closest("section");
+    $sectionContainer = $section.closest("div");
+    $sectionContainer.css("max-height", "1000px");
+    $sectionContainer.prev("header").remove();
+    $ul = $section.prev("section").find("ul").first();
     $firstExistingLi = $ul.find("li").first();
+    $sectionContainer.prepend($section);
     firstExistingLiHtml = $firstExistingLi[0].outerHTML;
     for (_i = 0, _len = times.length; _i < _len; _i++) {
       time = times[_i];
