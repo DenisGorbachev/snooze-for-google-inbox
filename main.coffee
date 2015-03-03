@@ -14,7 +14,6 @@ handleNewLiClick = (time, event) ->
     dateIncrement = TimeMoment.diff(CurrentMoment, 'days')
     if dateIncrement < 0
       throw "dateIncrement #{dateIncrement} < 0"
-    cl dateIncrement
     tdsByBackgroundColor = {}
     $("[jsaction*='show_date_picker'] + div tbody td").each ->
       $td = $(@)
