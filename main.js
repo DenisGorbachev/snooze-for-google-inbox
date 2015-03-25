@@ -200,13 +200,13 @@
     });
   }
 
-  $body.on("keydown", function(event) {
+  $body.on("keypress", function(event) {
     var $element, $target;
     $target = $(event.target);
     if ($target.closest(":input").length || $target.closest("[contenteditable]").length) {
       return;
     }
-    if (event.shiftKey || event.altKey || event.ctrlKey) {
+    if (event.altKey || event.ctrlKey) {
       return;
     }
     if (event.keyCode === 192) {

@@ -158,11 +158,11 @@ if isDebug
     $(".top-level-item [jsaction*='toggle_item']").first().simulate("mouseover")
     $body.unbindArrive ".top-level-item [jsaction*='toggle_item']"
 
-$body.on "keydown", (event) ->
+$body.on "keypress", (event) ->
   $target = $(event.target)
   if $target.closest(":input").length or $target.closest("[contenteditable]").length
     return
-  if event.shiftKey or event.altKey or event.ctrlKey
+  if event.altKey or event.ctrlKey
     return
   if event.keyCode is 192
     window.openSnoozeMenu()
