@@ -1,3 +1,5 @@
+# coffee -wc .
+
 # TODO: rewrite using "jsactions"?
 # I've discovered that jsaction attribute is actually being used at runtime
 # if you copy HTML while leaving jsaction, it will behave like the copy source element
@@ -42,12 +44,22 @@ handleNewLiClick = (time, event) ->
     $button = $input.closest(".top-level-item").find("[jsaction*='date_time_pattern_set']")
     $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next()
     $divAfterShowTimePicker.arrive "[role='menuitem']", ->
-      if $(@).text().trim() is "Custom"
-        $(@).simulate("mousedown").simulate("mouseup").simulate("click")
-        $input.val(TimeMoment.format("hh:mm A"))
-        $input.blur()
-        _.defer -> # TODO may be better to wait until both inputs are set
-          $button.simulate("mousedown").simulate("mouseup").simulate("click")
+      $menuitem = $(@)
+      if $menuitem.text().trim() is "Custom"
+        $menuitem.simulate("mousedown").simulate("mouseup").simulate("click")
+        _.defer ->
+#          $input.val(TimeMoment.format("hh:mm A"))
+          $input.sendkeys(TimeMoment.format("hh:mm A"))
+          $input.blur()
+#          $input.closest("[role='dialog']").simulate("mousedown").simulate("mouseup").simulate("click")
+#          $el = $input.closest("[role='dialog']").find("[role='heading']")
+#          $el = $("[role='search']")
+#          $el = $input.closest("[role='dialog']").find("input[aria-label='Does not repeat']")
+#          cl $el.get(0)
+#          $el.focus()
+#          $el.simulate("mousedown").simulate("mouseup").simulate("click")
+          _.defer ->
+            $button.simulate("mousedown").simulate("mouseup").simulate("click")
         $divAfterShowTimePicker.unbindArrive "[role='menuitem']"
     _.defer ->
       $input.simulate("mousedown").simulate("mouseup").simulate("click")
