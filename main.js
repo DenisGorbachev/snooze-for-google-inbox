@@ -69,7 +69,7 @@
         var $menuitem;
         $menuitem = $(this);
         if ($menuitem.find('span').eq(0).text().trim() === selectTime) {
-          $(menuitem.simulate("mousedown").simulate("mouseup").simulate("click");
+          $menuitem.simulate("mousedown").simulate("mouseup").simulate("click");
           _.defer(function() {
             return $button.simulate("mousedown").simulate("mouseup").simulate("click");
           });
@@ -157,46 +157,6 @@
     if (isDebug) {
       return $newLi.simulate("click");
     }
-  });
-
-  $body.arrive("[jsaction*='show_time_picker'] + div [role='menuitem']:first-child", function() {
-    var $arrivedMenuitem, $beforeMenuitem, $newMenuitem, $newSpans;
-    $arrivedMenuitem = $(this);
-    if ($arrivedMenuitem.hasClass("snooze-element")) {
-      return;
-    }
-    $newMenuitem = $($arrivedMenuitem[0].outerHTML);
-    $newMenuitem.addClass("snooze-element snooze-list-item");
-    $newMenuitem.find().andSelf().each(function(index, el) {
-      return $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data");
-    });
-    $newSpans = $newMenuitem.find("span");
-    $newSpans.eq(0).text("[T] Tennis");
-    $newSpans.eq(1).text("4:00 PM");
-    $beforeMenuitem = null;
-    $arrivedMenuitem.nextAll("[role='menuitem']").andSelf().each(function() {
-      var $spans;
-      $beforeMenuitem = $(this);
-      $spans = $beforeMenuitem.find("span");
-      if ($spans.eq(1).text().trim() > $newSpans.eq(1).text().trim()) {
-        return false;
-      }
-    });
-    $beforeMenuitem.before($newMenuitem);
-    return $newMenuitem.on("click", function() {
-      var $input, $menu, $menuitem;
-      $menuitem = $(this);
-      $menu = $menuitem.closest("[role='menu']");
-      $input = $menu.closest(".top-level-item").find("[jsaction*='show_time_picker'] input");
-      return $menu.find("[role='menuitem']").each(function() {
-        if ($(this).text().trim() === "Custom") {
-          $(this).simulate("mousedown").simulate("mouseup").simulate("click");
-          $input.val($menuitem.find("span").eq(1).text());
-          $input.blur();
-          return false;
-        }
-      });
-    });
   });
 
   if (isDebug) {
