@@ -1,5 +1,4 @@
 # coffee -wc .
-
 # TODO: rewrite using "jsactions"?
 # I've discovered that jsaction attribute is actually being used at runtime
 # if you copy HTML while leaving jsaction, it will behave like the copy source element
@@ -44,22 +43,21 @@ handleNewLiClick = (time, event) ->
     $button = $input.closest(".top-level-item").find("[jsaction*='date_time_pattern_set']")
     $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next()
     $divAfterShowTimePicker.arrive "[role='menuitem']", ->
+	
+      var selectTime;
+	  var timeFormatted = TimeMoment.format("h:mm A");
+	  if (timeFormatted == '4:00 PM') selectTime = 'Afternoon';
+	  else if (timeFormatted == '10:00 PM') selectTime = 'Evening';
+	  else selectTime = 'Morning';
+	  console.log(timeFormatted + ':' + selectTime);
+	
       $menuitem = $(@)
-      if $menuitem.text().trim() is "Custom"
+      if $menuitem.find('span').eq(0).text().trim() is selectTime //"Custom"
         $menuitem.simulate("mousedown").simulate("mouseup").simulate("click")
-        _.defer ->
-#          $input.val(TimeMoment.format("hh:mm A"))
-          $input.sendkeys(TimeMoment.format("hh:mm A"))
-          $input.blur()
-#          $input.closest("[role='dialog']").simulate("mousedown").simulate("mouseup").simulate("click")
-#          $el = $input.closest("[role='dialog']").find("[role='heading']")
-#          $el = $("[role='search']")
-#          $el = $input.closest("[role='dialog']").find("input[aria-label='Does not repeat']")
-#          cl $el.get(0)
-#          $el.focus()
-#          $el.simulate("mousedown").simulate("mouseup").simulate("click")
-          _.defer ->
-            $button.simulate("mousedown").simulate("mouseup").simulate("click")
+        #$input.val(TimeMoment.format("hh:mm A"))
+        #$input.blur()
+        _.defer -> # TODO may be better to wait until both inputs are set
+          $button.simulate("mousedown").simulate("mouseup").simulate("click")
         $divAfterShowTimePicker.unbindArrive "[role='menuitem']"
     _.defer ->
       $input.simulate("mousedown").simulate("mouseup").simulate("click")
@@ -117,7 +115,7 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
       $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
     $spans = $newLi.find("span")
     $spans.eq(1).text(time.name)
-    $spans.eq(2).text(time.getMoment().format("hh:mm A"))
+    $spans.eq(2).text(time.getMoment().format("h:mm A"))
     $newLi.addClass("snooze-element snooze-list-item")
     $newLi.on "click", _.partial(handleNewLiClick, time)
     $ul.append($newLi)
