@@ -39,7 +39,7 @@ handleNewLiClick = (time, event) ->
     $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next()
     $divAfterShowTimePicker.arrive "[role='menuitem']", ->
       $menuitem = $(@)
-      if $menuitem.find('span').eq(0).text().trim() is time.preset //"Custom"
+      if $menuitem.find('span').eq(0).text().trim() is time.preset
         $menuitem.simulate("mousedown").simulate("mouseup").simulate("click")
         _.defer -> # TODO may be better to wait until both inputs are set
           $button.simulate("mousedown").simulate("mouseup").simulate("click")
@@ -66,17 +66,17 @@ times = [
     name: "Sunday morning"
     preset: "Morning"
     getDateIncrement: ->
-      Moment = moment().day("Sunday")
+      Moment = moment().hour(0).minute(0).second(0).day("Sunday")
       if Moment.toDate().getTime() < Date.now()
-        Moment.add(7, "days")
+        Moment.add(7 + 1, "days")
       Moment.diff(moment(), 'days')
   ,
     name: "Tuesday afternoon"
     preset: "Afternoon"
     getDateIncrement: ->
-      Moment = moment().day("Tuesday")
+      Moment = moment().hour(0).minute(0).second(0).day("Tuesday")
       if Moment.toDate().getTime() < Date.now()
-        Moment.add(7, "days")
+        Moment.add(7 + 1, "days")
       Moment.diff(moment(), 'days')
 ]
 
@@ -96,7 +96,7 @@ $body.arrive "[data-jsaction*='show_date_time_picker']", ->
       $(el).removeAttr("id jsl jsan jsaction jsinstance data-jsaction data-action-data")
     $spans = $newLi.find("span")
     $spans.eq(1).text(time.name)
-    $spans.eq(2).text(time.getMoment().format("h:mm A"))
+    $spans.eq(2).text("")
     $newLi.addClass("snooze-element snooze-list-item")
     $newLi.on "click", _.partial(handleNewLiClick, time)
     $ul.append($newLi)

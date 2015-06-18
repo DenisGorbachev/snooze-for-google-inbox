@@ -52,7 +52,7 @@
       $divAfterShowTimePicker.arrive("[role='menuitem']", function() {
         var $menuitem;
         $menuitem = $(this);
-        if ($menuitem.find('span').eq(0).text().trim() === Math.floor(time.preset / "Custom")) {
+        if ($menuitem.find('span').eq(0).text().trim() === time.preset) {
           $menuitem.simulate("mousedown").simulate("mouseup").simulate("click");
           _.defer(function() {
             return $button.simulate("mousedown").simulate("mouseup").simulate("click");
@@ -92,9 +92,9 @@
       preset: "Morning",
       getDateIncrement: function() {
         var Moment;
-        Moment = moment().day("Sunday");
+        Moment = moment().hour(0).minute(0).second(0).day("Sunday");
         if (Moment.toDate().getTime() < Date.now()) {
-          Moment.add(7, "days");
+          Moment.add(7 + 1, "days");
         }
         return Moment.diff(moment(), 'days');
       }
@@ -103,9 +103,9 @@
       preset: "Afternoon",
       getDateIncrement: function() {
         var Moment;
-        Moment = moment().day("Tuesday");
+        Moment = moment().hour(0).minute(0).second(0).day("Tuesday");
         if (Moment.toDate().getTime() < Date.now()) {
-          Moment.add(7, "days");
+          Moment.add(7 + 1, "days");
         }
         return Moment.diff(moment(), 'days');
       }
