@@ -8,13 +8,8 @@ isDebug = false
 $body = $(document.body)
 
 handleNewLiClick = (time, event) ->
-  TimeMoment = time.getMoment()
-  CurrentMoment = moment().hour(0).minute(0).second(0)
-
   $body.arrive "[jsaction*='show_date_picker'] + div", ->
-    dateIncrement = TimeMoment.diff(CurrentMoment, 'days')
-    if dateIncrement < 0
-      throw "dateIncrement #{dateIncrement} < 0"
+    dateIncrement = time.getDateIncrement()
     tdsByBackgroundColor = {}
     $("[jsaction*='show_date_picker'] + div tbody td").each ->
       $td = $(@)
@@ -43,16 +38,8 @@ handleNewLiClick = (time, event) ->
     $button = $input.closest(".top-level-item").find("[jsaction*='date_time_pattern_set']")
     $divAfterShowTimePicker = $input.closest("[jsaction*='show_time_picker']").next()
     $divAfterShowTimePicker.arrive "[role='menuitem']", ->
-	
-      var selectTime;
-	  var timeFormatted = TimeMoment.format("h:mm A");
-	  if (timeFormatted == '4:00 PM') selectTime = 'Afternoon';
-	  else if (timeFormatted == '10:00 PM') selectTime = 'Evening';
-	  else selectTime = 'Morning';
-	  console.log(timeFormatted + ':' + selectTime);
-	
       $menuitem = $(@)
-      if $menuitem.find('span').eq(0).text().trim() is selectTime //"Custom"
+      if $menuitem.find('span').eq(0).text().trim() is time.preset //"Custom"
         $menuitem.simulate("mousedown").simulate("mouseup").simulate("click")
         _.defer -> # TODO may be better to wait until both inputs are set
           $button.simulate("mousedown").simulate("mouseup").simulate("click")
@@ -64,37 +51,33 @@ handleNewLiClick = (time, event) ->
   $(@).closest(".top-level-item").find("[data-jsaction*='show_date_time_picker']").simulate("mousedown").simulate("mouseup").simulate("click")
 
 times = [
-  {
-    name: "[T0] Tennis today"
-    getMoment: ->
-      moment().hour(16).minute(0).second(0)
-  }
-  {
-    name: "[E0] Evening today"
-    getMoment: ->
-      moment().hour(22).minute(0).second(0)
-  }
-  {
-    name: "[T1] Tennis tomorrow"
-    getMoment: ->
-      moment().hour(16).minute(0).second(0).add(1, "days")
-  }
-  {
-    name: "[MW] Morning this Sunday"
-    getMoment: ->
-      Moment = moment().hour(7).minute(0).second(0).day("Sunday")
+    name: "Today afternoon"
+    preset: "Afternoon"
+    getDateIncrement: -> 0
+  ,
+    name: "Today evening"
+    preset: "Evening"
+    getDateIncrement: -> 0
+  ,
+    name: "Tomorrow afternoon"
+    preset: "Afternoon"
+    getDateIncrement: -> 1
+  ,
+    name: "Sunday morning"
+    preset: "Morning"
+    getDateIncrement: ->
+      Moment = moment().day("Sunday")
       if Moment.toDate().getTime() < Date.now()
         Moment.add(7, "days")
-      Moment
-  }
-  {
-    name: "[TT] Tennis this Tuesday"
-    getMoment: ->
-      Moment = moment().hour(16).minute(0).second(0).day("Tuesday")
+      Moment.diff(moment(), 'days')
+  ,
+    name: "Tuesday afternoon"
+    preset: "Afternoon"
+    getDateIncrement: ->
+      Moment = moment().day("Tuesday")
       if Moment.toDate().getTime() < Date.now()
         Moment.add(7, "days")
-      Moment
-  }
+      Moment.diff(moment(), 'days')
 ]
 
 $body.arrive "[data-jsaction*='show_date_time_picker']", ->
