@@ -146,3 +146,8 @@ window.openSnoozeMenu = (callback = null) ->
     return
   $currentItem.find("[jsaction*='toggle_snooze_menu']").simulate("mousedown").simulate("mouseup").simulate("click")
   callback?()
+
+$body.arrive "[role='heading']", {fireOnAttributesModification: true}, ->
+  $heading = $(@)
+  return if $heading.text() isnt "Top results"
+  $heading.parent(".section-header").parent().remove()
